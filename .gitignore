@@ -26,3 +26,5 @@ Thumbs.db
 # Power BI
 *.pbix
 *.csv
+.pytest_cache
+logs

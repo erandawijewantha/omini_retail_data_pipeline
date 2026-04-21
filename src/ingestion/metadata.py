@@ -19,7 +19,7 @@ def add_ingestion_metadata(
     
     result["batch_id"] = batch_id
     result["source_file_name"] = source_file_name
-    result["ingestion_timestamp"] = datetime.utcnow()
+    result["ingested_at"] = datetime.utcnow()
     result["record_hash"] = result.apply(build_record_hash, axis=1)
     
     return result

@@ -54,10 +54,10 @@ def mark_file_processed(
                 batch_id
             )
             VALUES (
-                : file_name,
-                : file_checksum,
-                : source_name,
-                : batch_id
+                :file_name,
+                :file_checksum,
+                :source_name,
+                :batch_id
             )
             ON CONFLICT (file_name)
             DO UPDATE SET

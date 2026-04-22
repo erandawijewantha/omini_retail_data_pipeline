@@ -73,3 +73,50 @@ CREATE TABLE IF NOT EXISTS silver.payments_clean (
     ingested_at TIMESTAMP,
     record_hash VARCHAR(64)
 );
+
+CREATE TABLE IF NOT EXISTS silver.order_items_clean (
+    order_item_id VARCHAR(50) PRIMARY KEY,
+    order_id VARCHAR(50),
+    product_id VARCHAR(50),
+    quantity INT,
+    unit_price NUMERIC(12,2),
+    discount_amount NUMERIC(12,2),
+    line_amount NUMERIC(14,2),
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    batch_id BIGINT,
+    source_file_name VARCHAR(255),
+    ingested_at TIMESTAMP,
+    record_hash VARCHAR(64)
+);
+
+CREATE TABLE IF NOT EXISTS silver.refunds_clean (
+    refund_id VARCHAR(50) PRIMARY KEY,
+    order_id VARCHAR(50),
+    payment_id VARCHAR(50),
+    refund_reason VARCHAR(255),
+    refund_amount NUMERIC(14,2),
+    refund_ts TIMESTAMP,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    batch_id BIGINT,
+    source_file_name VARCHAR(255),
+    ingested_at TIMESTAMP,
+    record_hash VARCHAR(64)
+);
+
+CREATE TABLE IF NOT EXISTS silver.inventory_movements_clean (
+    inventory_movement_id VARCHAR(50) PRIMARY KEY,
+    store_id VARCHAR(50),
+    product_id VARCHAR(50),
+    movement_type VARCHAR(50),
+    quantity_change INT,
+    movement_ts TIMESTAMP,
+    reference_id VARCHAR(100),
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    batch_id BIGINT,
+    source_file_name VARCHAR(255),
+    ingested_at TIMESTAMP,
+    record_hash VARCHAR(64)
+);

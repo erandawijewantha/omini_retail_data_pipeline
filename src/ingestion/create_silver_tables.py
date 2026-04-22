@@ -21,7 +21,7 @@ def create_bronze_tables() -> None:
     sql = read_sql_file(sql_file)
     execute_sql(sql)
 
-    logger.info("Bronze tables created successfully.")
+    logger.info("Silver tables created successfully.")
 
 if __name__ == "__main__":
     create_bronze_tables()

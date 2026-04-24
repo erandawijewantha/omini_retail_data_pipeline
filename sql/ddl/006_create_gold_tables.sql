@@ -71,3 +71,18 @@ CREATE TABLE IF NOT EXISTS gold.mart_daily_sales (
     total_items INT,
     PRIMARY KEY (order_date, store_id, order_channel)
 );
+
+CREATE TABLE IF NOT EXISTS gold.fact_sales_items (
+    order_item_id VARCHAR(50) PRIMARY KEY,
+    order_id VARCHAR(50),
+    order_date DATE,
+    order_ts TIMESTAMP,
+    store_id VARCHAR(50),
+    customer_id VARCHAR(50),
+    product_id VARCHAR(50),
+    order_channel VARCHAR(50),
+    quantity INT,
+    unit_price NUMERIC(12,2),
+    discount_amount NUMERIC(12,2),
+    line_amount NUMERIC(14,2)
+);

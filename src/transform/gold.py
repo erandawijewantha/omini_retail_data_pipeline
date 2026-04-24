@@ -58,7 +58,7 @@ def load_dimensions() -> None:
             "brand",
             "unit_price",
             "cost_price",
-            "is_activate",
+            "is_active",
         ]
     ].copy()
     
@@ -162,6 +162,48 @@ def build_fact_refunds() -> pd.DataFrame:
             "refund_amount",
         ]
     ].copy()
+    
+    
+def build_fact_sales_items() -> pd.DataFrame:
+    orders = read_table("silver", "orders_clean")
+    order_items = read_table("silver", "order_items_clean")
+
+    orders["order_ts"] = pd.to_datetime(orders["order_ts"], errors="coerce")
+    orders["order_date"] = orders["order_ts"].dt.date
+
+    order_context = orders[
+        [
+            "order_id",
+            "order_date",
+            "order_ts",
+            "store_id",
+            "customer_id",
+            "order_channel",
+        ]
+    ].drop_duplicates(subset=["order_id"])
+
+    fact_sales_items = order_items.merge(
+        order_context,
+        on="order_id",
+        how="inner"
+    )
+
+    return fact_sales_items[
+        [
+            "order_item_id",
+            "order_id",
+            "order_date",
+            "order_ts",
+            "store_id",
+            "customer_id",
+            "product_id",
+            "order_channel",
+            "quantity",
+            "unit_price",
+            "discount_amount",
+            "line_amount",
+        ]
+    ].copy()
 
 
 def build_mart_daily_sales(fact_sales: pd.DataFrame) -> pd.DataFrame:
@@ -182,9 +224,12 @@ def build_mart_daily_sales(fact_sales: pd.DataFrame) -> pd.DataFrame:
     return mart
 
 
+
+
 def load_facts_and_marts() -> None:
     fact_sales = build_fact_sales()
     fact_refunds = build_fact_refunds()
+    fact_sales_items = build_fact_sales_items()
     mart_daily_sales = build_mart_daily_sales(fact_sales)
 
     truncate_table("fact_sales")
@@ -193,10 +238,12 @@ def load_facts_and_marts() -> None:
     truncate_table("fact_refunds")
     write_table(fact_refunds, "fact_refunds")
 
+    truncate_table("fact_sales_items")
+    write_table(fact_sales_items, "fact_sales_items")
+
     truncate_table("mart_daily_sales")
     write_table(mart_daily_sales, "mart_daily_sales")
 
-    logger.info("Loaded gold facts and marts.")
 
 
 def main() -> None:

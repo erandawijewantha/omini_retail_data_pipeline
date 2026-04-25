@@ -12,6 +12,7 @@ from src.quality.business_rules import (
 )
 from src.utils.db import get_engine
 from src.utils.logger import get_logger
+from src.transform.scd import apply_scd_type_2
 
 logger = get_logger(__name__)
 
@@ -109,11 +110,84 @@ def load_clean_transactions() -> None:
 
     logger.info("Loaded clean transactional silver tables.")
 
+def load_scd_dimensions() -> None:
+    customers = read_bronze_table("customers")
+    products = read_bronze_table("products")
 
+    customer_tracked_cols = [
+        "first_name",
+        "last_name",
+        "gender",
+        "city",
+        "region",
+        "loyalty_tier",
+        "customer_segment",
+        "is_active",
+    ]
+
+    customer_insert_cols = [
+        "customer_id",
+        "first_name",
+        "last_name",
+        "gender",
+        "city",
+        "region",
+        "loyalty_tier",
+        "customer_segment",
+        "is_active",
+        "effective_from",
+        "effective_to",
+        "is_current",
+        "record_hash",
+    ]
+
+    product_tracked_cols = [
+        "sku",
+        "product_name",
+        "category",
+        "subcategory",
+        "brand",
+        "unit_price",
+        "cost_price",
+        "is_active",
+    ]
+
+    product_insert_cols = [
+        "product_id",
+        "sku",
+        "product_name",
+        "category",
+        "subcategory",
+        "brand",
+        "unit_price",
+        "cost_price",
+        "is_active",
+        "effective_from",
+        "effective_to",
+        "is_current",
+        "record_hash",
+    ]
+
+    apply_scd_type_2(
+        source_df=customers[["customer_id", *customer_tracked_cols, "updated_at"]],
+        history_table="dim_customer_history",
+        business_key="customer_id",
+        tracked_cols=customer_tracked_cols,
+        insert_cols=customer_insert_cols,
+    )
+
+    apply_scd_type_2(
+        source_df=products[["product_id", *product_tracked_cols, "updated_at"]],
+        history_table="dim_product_history",
+        business_key="product_id",
+        tracked_cols=product_tracked_cols,
+        insert_cols=product_insert_cols,
+    )
+    
 def main() -> None:
     load_current_dimensions()
     load_clean_transactions()
-
+    load_scd_dimensions()
 
 if __name__ == "__main__":
     main()
